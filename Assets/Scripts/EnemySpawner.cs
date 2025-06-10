@@ -24,6 +24,7 @@ public BattleGridManager gridManager;
 
             Vector3 pos = gridManager.GetWorldPosition(x, y);
             GameObject obj = Instantiate(prefab, pos, Quaternion.identity);
+            obj.tag = "Enemy"; // 태그 설정으로 용병이 인식 가능하도록
 
             // add movement behavior to seek nearest cover
             obj.AddComponent<UnitCoverMovement>();

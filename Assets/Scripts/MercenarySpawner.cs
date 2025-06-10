@@ -25,6 +25,7 @@ public class MercenarySpawner : MonoBehaviour
 
             Vector3 position = gridManager.GetWorldPosition(x, y);
             GameObject unitObj = Instantiate(unitPrefab, position, Quaternion.identity);
+            unitObj.tag = "Merc"; // 태그 설정으로 적이 인식 가능하도록
 
             // add movement behavior to seek nearest cover
             unitObj.AddComponent<UnitCoverMovement>();
