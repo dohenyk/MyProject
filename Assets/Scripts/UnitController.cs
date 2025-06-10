@@ -2,7 +2,6 @@
 using UnityEngine;
 using System.Collections;
 
-
 public class UnitController : MonoBehaviour
 {
     public float attackSpeed; // 초당 공격 횟수
@@ -37,11 +36,9 @@ public class UnitController : MonoBehaviour
 
         currentHP = maxHP;
 
-        // ––––– Clone 접미사 제거 –––––
         string baseName = gameObject.name;
         if (baseName.EndsWith("(Clone)"))
             baseName = baseName.Substring(0, baseName.Length - 7);
-        // ––––– 아래부터 baseName 사용 –––––
 
         string fireClipName = baseName + "_Fire";
         var controller = animator.runtimeAnimatorController;
@@ -53,11 +50,6 @@ public class UnitController : MonoBehaviour
                 Debug.Log($"Fire 애니메이션 클립 자동 할당 완료! 재생 시간 : {fireClip.length} 초");
                 break;
             }
-        }
-
-        if (fireClip == null)
-        {
-            //Debug.LogWarning("Fire 애니메이션 클립을 찾지 못했음!");
         }
     }
 
@@ -138,31 +130,36 @@ public class UnitController : MonoBehaviour
 
     private IEnumerator AttackLoop()
     {
-        float targetCycleTime = 1f / attackSpeed;        // 원래 계산된 주기 (초)
-        float minCycleTime = fireClip.length;            // 최소 주기 (애니메이션 길이)
-        float maxAllowedSpeed = 1f / minCycleTime;       // 최대 허용 공격 속도 (초당 몇 회)
+        float targetCycleTime = 1f / attackSpeed;
+        float minCycleTime = fireClip.length;
+        float maxAllowedSpeed = 1f / minCycleTime;
 
-        float cycleTime = Mathf.Max(targetCycleTime, minCycleTime); // 최종 사용할 주기
-        float actualAppliedSpeed = 1f / cycleTime;                 // 최종 적용 속도 (초당 몇 회)
+        float cycleTime = Mathf.Max(targetCycleTime, minCycleTime);
+        float actualAppliedSpeed = 1f / cycleTime;
 
         if (cycleTime > targetCycleTime)
         {
             Debug.LogWarning(
-                $"[공격 속도 제한] 입력된 attackSpeed: {attackSpeed:F2}회/초 → 최대 허용 속도: {maxAllowedSpeed:F2}회/초 → 실제 적용 속도: {actualAppliedSpeed:F2}회/초 (애니메이션 길이 {fireClip.length:F2}초 기준)"
+                $"[공격 속도 제한] 입력된 attackSpeed: {attackSpeed:F2}회/초 → 최대 허용 속도: {maxAllowedSpeed:F2}회/초 → 실제 적용 속도: {actualAppliedSpeed:F2}회/초"
             );
         }
 
         while (true)
         {
+            if (currentTarget == null)
+            {
+                currentTarget = AcquireNearestOpponent();
+                if (currentTarget == null)
+                {
+                    SetAimOff();
+                    yield break;
+                }
+
+                Debug.Log($"{gameObject.name} -> {currentTarget.name} 새 타겟 조준");
+            }
+
             animator.SetTrigger("FireTrigger");
-            if (currentTarget != null)
-            {
-                Debug.Log($"{gameObject.name} -> {currentTarget.name} FireTrigger 실행");
-            }
-            else
-            {
-                Debug.Log("FireTrigger 실행 (대상 없음)");
-            }
+            Debug.Log($"{gameObject.name} -> {currentTarget.name} FireTrigger 실행");
 
             yield return new WaitForSeconds(fireClip.length);
 
@@ -173,18 +170,60 @@ public class UnitController : MonoBehaviour
                 {
                     targetCtrl.TakeDamage(attackDamage);
                     Debug.Log($"{gameObject.name}이(가) {currentTarget.name}에게 {attackDamage} 데미지 부여");
+
+                    if (targetCtrl.currentHP <= 0)
+                    {
+                        currentTarget = null;
+                    }
+                }
+                else
+                {
+                    currentTarget = null;
                 }
             }
 
             float waitTime = cycleTime - fireClip.length;
-
             if (waitTime > 0f)
             {
                 Debug.Log($"AimHold 대기 {waitTime:F2}초");
-
                 yield return new WaitForSeconds(waitTime);
             }
         }
+    }
+
+    public GameObject AcquireNearestOpponent()
+    {
+        string opponentTag = gameObject.CompareTag("Enemy") ? "Merc" : "Enemy";
+        var opponents = GameObject.FindGameObjectsWithTag(opponentTag);
+        if (opponents.Length == 0)
+            return null;
+
+        GameObject nearest = null;
+        float nearestDist = float.MaxValue;
+        foreach (var opp in opponents)
+        {
+            var ctrl = opp.GetComponent<UnitController>();
+            if (ctrl != null && ctrl.currentHP > 0)
+            {
+                float dist = Vector3.Distance(transform.position, opp.transform.position);
+                if (dist < nearestDist)
+                {
+                    nearest = opp;
+                    nearestDist = dist;
+                }
+            }
+        }
+
+        if (nearest != null)
+        {
+            Vector3 dir = nearest.transform.position - transform.position;
+            if (dir.x < 0)
+                transform.localScale = new Vector3(-Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
+            else
+                transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
+        }
+
+        return nearest;
     }
 
     public void TakeDamage(float amount)

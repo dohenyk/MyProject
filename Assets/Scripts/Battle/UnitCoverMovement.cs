@@ -65,14 +65,13 @@ public class UnitCoverMovement : MonoBehaviour
                 // Sit 애니메이션이 끝나고 Sit_Idle 상태에 도달할 때까지 대기
                 yield return new WaitUntil(IsSitIdleState);
 
-                var target = AimAtNearestOpponent();
+                var target = unitController.AcquireNearestOpponent();
                 if (target != null)
                     Debug.Log($"{gameObject.name} -> {target.name} 조준");
 
                 unitController.currentTarget = target;
                 unitController.SetAimOn();
                 unitController.StartAttack();
-                
                 yield break;
             }
 
@@ -90,37 +89,6 @@ public class UnitCoverMovement : MonoBehaviour
             .Where(c => c.IsAvailable || c.OccupiedBy == gameObject)
             .OrderBy(c => Vector3.Distance(transform.position, c.transform.position))
             .FirstOrDefault(c => c.IsAvailable || c.OccupiedBy == gameObject);
-    }
-
-    private GameObject AimAtNearestOpponent()
-    {
-        string opponentTag = gameObject.CompareTag("Enemy") ? "Merc" : "Enemy";
-        var opponents = GameObject.FindGameObjectsWithTag(opponentTag);
-        if (opponents.Length == 0)
-            return null;
-
-        GameObject nearest = null;
-        float nearestDist = float.MaxValue;
-        foreach (var opp in opponents)
-        {
-            float dist = Vector3.Distance(transform.position, opp.transform.position);
-            if (dist < nearestDist)
-            {
-                nearestDist = dist;
-                nearest = opp;
-            }
-        }
-
-        if (nearest != null)
-        {
-            Vector3 dir = nearest.transform.position - transform.position;
-            if (dir.x < 0)
-                transform.localScale = new Vector3(-Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
-            else
-                transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
-        }
-
-        return nearest;
     }
 
     // Sit 애니메이션 완료 후 Idle 상태에 도달했는지 확인
