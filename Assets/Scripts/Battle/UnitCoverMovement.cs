@@ -69,7 +69,10 @@ public class UnitCoverMovement : MonoBehaviour
                 if (target != null)
                     Debug.Log($"{gameObject.name} -> {target.name} 조준");
 
+                unitController.currentTarget = target;
                 unitController.SetAimOn();
+                unitController.StartAttack();
+                
                 yield break;
             }
 

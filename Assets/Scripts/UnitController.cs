@@ -12,6 +12,13 @@ public class UnitController : MonoBehaviour
 
     public MercenaryData mercenaryData;
 
+    public float attackDamage = 1f;   // 공격력
+    public float maxHP = 10f;         // 최대 HP
+    public float currentHP;           // 현재 HP
+
+    [HideInInspector]
+    public GameObject currentTarget;  // 공격 대상
+
     private Coroutine attackCoroutine;
 
     void Start()
@@ -19,12 +26,16 @@ public class UnitController : MonoBehaviour
         if (mercenaryData != null)
         {
             attackSpeed = mercenaryData.attac_speed;
-            Debug.Log($"[데이터 적용] {mercenaryData.mercenaryName}의 공격 속도: {attackSpeed}회/초");
+            attackDamage = mercenaryData.attack;
+            maxHP = mercenaryData.hp;
+            Debug.Log($"[데이터 적용] {mercenaryData.mercenaryName}의 공격 속도: {attackSpeed}회/초, 공격력 {attackDamage}, HP {maxHP}");
         }
         else
         {
-            Debug.LogWarning("MercenaryData가 연결되어 있지 않습니다. 기본 attackSpeed 사용.");
+            Debug.LogWarning("MercenaryData가 연결되어 있지 않습니다. 기본 스탯 사용.");
         }
+
+        currentHP = maxHP;
 
         // ––––– Clone 접미사 제거 –––––
         string baseName = gameObject.name;
@@ -144,9 +155,26 @@ public class UnitController : MonoBehaviour
         while (true)
         {
             animator.SetTrigger("FireTrigger");
-            Debug.Log("FireTrigger 실행");
+            if (currentTarget != null)
+            {
+                Debug.Log($"{gameObject.name} -> {currentTarget.name} FireTrigger 실행");
+            }
+            else
+            {
+                Debug.Log("FireTrigger 실행 (대상 없음)");
+            }
 
             yield return new WaitForSeconds(fireClip.length);
+
+            if (currentTarget != null)
+            {
+                var targetCtrl = currentTarget.GetComponent<UnitController>();
+                if (targetCtrl != null)
+                {
+                    targetCtrl.TakeDamage(attackDamage);
+                    Debug.Log($"{gameObject.name}이(가) {currentTarget.name}에게 {attackDamage} 데미지 부여");
+                }
+            }
 
             float waitTime = cycleTime - fireClip.length;
 
@@ -156,6 +184,17 @@ public class UnitController : MonoBehaviour
 
                 yield return new WaitForSeconds(waitTime);
             }
+        }
+    }
+
+    public void TakeDamage(float amount)
+    {
+        currentHP -= amount;
+        Debug.Log($"{gameObject.name} 피격: {amount}, 남은 HP {currentHP}");
+        if (currentHP <= 0)
+        {
+            Debug.Log($"{gameObject.name} 사망!");
+            Destroy(gameObject);
         }
     }
 }
