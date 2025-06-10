@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 995cf9754c8f1c1499d35bc63b5dbeb3, type: 3}
+  m_Name: Merc_03
+  m_EditorClassIdentifier: 
+  mercenaryName: Eugene
+  attack: 3
+  attac_speed: 5
+  move_speed: 1.8
+  hp: 70
+  price: 1300
+  animatorController: {fileID: 9100000, guid: 016721c23e62c4147ae2f62345fbf21e, type: 2}
+  portrait: {fileID: 1179697423844117046, guid: c384b9608828f6e40a0eb84483896c0f, type: 3}
+  idleAnimation: {fileID: 7400000, guid: 7a3a9b7467d09304588dfb7e6c8dbbc8, type: 2}

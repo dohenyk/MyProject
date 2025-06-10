@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 995cf9754c8f1c1499d35bc63b5dbeb3, type: 3}
+  m_Name: Merc_04
+  m_EditorClassIdentifier: 
+  mercenaryName: Solar
+  attack: 8
+  attac_speed: 1
+  move_speed: 3.2
+  hp: 100
+  price: 1150
+  animatorController: {fileID: 9100000, guid: 2ebbbb12e0024984d8a3753d3c1b3339, type: 2}
+  portrait: {fileID: 9221585817823818137, guid: a29963aeace6ec540a341ea11b141aea, type: 3}
+  idleAnimation: {fileID: 7400000, guid: 1c2ab679e766da944aa91188fb1d57cd, type: 2}
