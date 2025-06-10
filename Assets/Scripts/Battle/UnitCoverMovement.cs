@@ -55,9 +55,8 @@ public class UnitCoverMovement : MonoBehaviour
                 targetCover.Reserve(gameObject);   // occupy
                 unitController.SetSit();
 
-                // Sit_Idle 상태가 될 때까지 대기한 뒤 조준 상태로 전환
-                yield return new WaitUntil(() =>
-                    unitController.animator.GetCurrentAnimatorStateInfo(0).IsName("Sit_Idle"));
+                // Sit 애니메이션이 끝나고 Sit_Idle 상태에 도달할 때까지 대기
+                yield return new WaitUntil(IsSitIdleState);
 
                 var target = AimAtNearestOpponent();
                 if (target != null)
@@ -112,6 +111,13 @@ public class UnitCoverMovement : MonoBehaviour
         }
 
         return nearest;
+    }
+
+    // Sit 애니메이션 완료 후 Idle 상태에 도달했는지 확인
+    private bool IsSitIdleState()
+    {
+        var info = unitController.animator.GetCurrentAnimatorStateInfo(0);
+        return info.IsName("Merc_Sit_Idle") || info.IsName("Enemy_Sit_Idle") || info.IsName("Sit_Idle");
     }
 
     void OnDestroy()
