@@ -34,6 +34,7 @@ public BattleGridManager gridManager;
             if (controller != null && enemyDatas != null && index < enemyDatas.Length)
             {
                 controller.enemyData = enemyDatas[index];
+                controller.ApplyEnemyData();
 
                 // Animator에 AnimatorController 연결
                 var animator = obj.GetComponent<Animator>();
@@ -41,6 +42,7 @@ public BattleGridManager gridManager;
                 if (data != null && data.animatorController != null)
                 {
                     animator.runtimeAnimatorController = data.animatorController;
+                    controller.FindFireClip();
                 }
             }
             index++;

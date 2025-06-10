@@ -5,10 +5,8 @@ using System.Collections;
 public class UnitController : MonoBehaviour
 {
     public float attackSpeed; // 초당 공격 횟수
-
     public Animator animator;
     public AnimationClip fireClip; // Fire 애니메이션 클립 (재생 길이를 구하기 위해)
-
     public MercenaryData mercenaryData;
 
     public float attackDamage = 1f;   // 공격력
@@ -21,6 +19,13 @@ public class UnitController : MonoBehaviour
     private Coroutine attackCoroutine;
 
     void Start()
+    {
+        ApplyData();
+        FindFireClip();
+    }
+
+    // 데이터 적용(공격 속도/공격력/HP)
+    public void ApplyData()
     {
         if (mercenaryData != null)
         {
@@ -35,6 +40,13 @@ public class UnitController : MonoBehaviour
         }
 
         currentHP = maxHP;
+    }
+
+    // 애니메이터에서 Fire 클립을 찾아 자동 할당
+    public void FindFireClip()
+    {
+        if (fireClip != null || animator == null || animator.runtimeAnimatorController == null)
+            return;
 
         string baseName = gameObject.name;
         if (baseName.EndsWith("(Clone)"))
@@ -50,6 +62,11 @@ public class UnitController : MonoBehaviour
                 Debug.Log($"Fire 애니메이션 클립 자동 할당 완료! 재생 시간 : {fireClip.length} 초");
                 break;
             }
+        }
+
+        if (fireClip == null)
+        {
+            Debug.LogWarning($"{gameObject.name}의 Fire 애니메이션 클립({fireClipName})을 찾지 못했습니다");
         }
     }
 
@@ -108,6 +125,7 @@ public class UnitController : MonoBehaviour
         {
             if (attackCoroutine == null)
             {
+                FindFireClip();
                 attackCoroutine = StartCoroutine(AttackLoop());
                 Debug.Log("자동 공격 시작!");
             }
@@ -131,8 +149,8 @@ public class UnitController : MonoBehaviour
     private IEnumerator AttackLoop()
     {
         float targetCycleTime = 1f / attackSpeed;
-        float minCycleTime = fireClip.length;
-        float maxAllowedSpeed = 1f / minCycleTime;
+        float minCycleTime = fireClip != null ? fireClip.length : 0f;
+        float maxAllowedSpeed = minCycleTime > 0f ? 1f / minCycleTime : attackSpeed;
 
         float cycleTime = Mathf.Max(targetCycleTime, minCycleTime);
         float actualAppliedSpeed = 1f / cycleTime;
@@ -161,7 +179,7 @@ public class UnitController : MonoBehaviour
             animator.SetTrigger("FireTrigger");
             Debug.Log($"{gameObject.name} -> {currentTarget.name} FireTrigger 실행");
 
-            yield return new WaitForSeconds(fireClip.length);
+            yield return new WaitForSeconds(fireClip != null ? fireClip.length : 0f);
 
             if (currentTarget != null)
             {
@@ -182,7 +200,7 @@ public class UnitController : MonoBehaviour
                 }
             }
 
-            float waitTime = cycleTime - fireClip.length;
+            float waitTime = cycleTime - (fireClip != null ? fireClip.length : 0f);
             if (waitTime > 0f)
             {
                 Debug.Log($"AimHold 대기 {waitTime:F2}초");

@@ -30,15 +30,17 @@ public class MercenarySpawner : MonoBehaviour
             // add movement behavior to seek nearest cover
             unitObj.AddComponent<UnitCoverMovement>();
 
-            // UnitController에 MercenaryData 연결
+            // UnitController에 MercenaryData 연결 및 초기화
             var controller = unitObj.GetComponent<UnitController>();
             controller.mercenaryData = mercData;
+            controller.ApplyData();
 
             // Animator에 AnimatorController 연결
             var animator = unitObj.GetComponent<Animator>();
             if (mercData.animatorController != null)
             {
                 animator.runtimeAnimatorController = mercData.animatorController;
+                controller.FindFireClip();
                 Debug.Log($"{mercData.mercenaryName}에 AnimatorController 연결 완료!");
             }
             else
