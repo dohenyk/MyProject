@@ -55,7 +55,7 @@ public class UnitCoverMovement : MonoBehaviour
                 targetCover.Reserve(gameObject);   // occupy
                 unitController.SetSit();
 
-                // Sit 애니메이션이 끝나고 Sit_Idle 상태(머쓱/적 모두)에 도달할 때까지 대기
+                // Sit 애니메이션이 끝나고 Sit_Idle 상태에 도달할 때까지 대기
                 yield return new WaitUntil(IsSitIdleState);
 
                 var target = AimAtNearestOpponent();
