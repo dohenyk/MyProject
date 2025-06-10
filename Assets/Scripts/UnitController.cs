@@ -12,6 +12,13 @@ public class UnitController : MonoBehaviour
 
     public MercenaryData mercenaryData;
 
+    public float attackDamage = 1f;   // 공격력
+    public float maxHP = 10f;         // 최대 HP
+    public float currentHP;           // 현재 HP
+
+    [HideInInspector]
+    public GameObject currentTarget;  // 공격 대상
+
     private Coroutine attackCoroutine;
 
     void Start()
@@ -19,12 +26,16 @@ public class UnitController : MonoBehaviour
         if (mercenaryData != null)
         {
             attackSpeed = mercenaryData.attac_speed;
-            Debug.Log($"[데이터 적용] {mercenaryData.mercenaryName}의 공격 속도: {attackSpeed}회/초");
+            attackDamage = mercenaryData.attack;
+            maxHP = mercenaryData.hp;
+            Debug.Log($"[데이터 적용] {mercenaryData.mercenaryName}의 공격 속도: {attackSpeed}회/초, 공격력 {attackDamage}, HP {maxHP}");
         }
         else
         {
-            Debug.LogWarning("MercenaryData가 연결되어 있지 않습니다. 기본 attackSpeed 사용.");
+            Debug.LogWarning("MercenaryData가 연결되어 있지 않습니다. 기본 스탯 사용.");
         }
+
+        currentHP = maxHP;
 
         // ––––– Clone 접미사 제거 –––––
         string baseName = gameObject.name;
@@ -143,19 +154,99 @@ public class UnitController : MonoBehaviour
 
         while (true)
         {
+            if (currentTarget == null)
+            {
+                currentTarget = AcquireNearestOpponent();
+                if (currentTarget == null)
+                {
+                    SetAimOff();
+                    yield break;
+                }
+
+                Debug.Log($"{gameObject.name} -> {currentTarget.name} 새 타겟 조준");
+            }
+
             animator.SetTrigger("FireTrigger");
-            Debug.Log("FireTrigger 실행");
+            Debug.Log($"{gameObject.name} -> {currentTarget.name} FireTrigger 실행");
 
             yield return new WaitForSeconds(fireClip.length);
+
+            if (currentTarget != null)
+            {
+                var targetCtrl = currentTarget.GetComponent<UnitController>();
+                if (targetCtrl != null)
+                {
+                    targetCtrl.TakeDamage(attackDamage);
+                    Debug.Log($"{gameObject.name}이(가) {currentTarget.name}에게 {attackDamage} 데미지 부여");
+
+                    if (targetCtrl.currentHP <= 0)
+                    {
+                        currentTarget = null;
+                    }
+                }
+                else
+                {
+                    currentTarget = null;
+                }
+            }
+            else
+            {
+                currentTarget = null;
+            }
 
             float waitTime = cycleTime - fireClip.length;
 
             if (waitTime > 0f)
             {
                 Debug.Log($"AimHold 대기 {waitTime:F2}초");
-
                 yield return new WaitForSeconds(waitTime);
             }
+        }
+    }
+
+    public GameObject AcquireNearestOpponent()
+    {
+        string opponentTag = gameObject.CompareTag("Enemy") ? "Merc" : "Enemy";
+        var opponents = GameObject.FindGameObjectsWithTag(opponentTag);
+        if (opponents.Length == 0)
+            return null;
+
+        GameObject nearest = null;
+        float nearestDist = float.MaxValue;
+        foreach (var opp in opponents)
+        {
+            var ctrl = opp.GetComponent<UnitController>();
+            if (ctrl != null && ctrl.currentHP > 0)
+            {
+                float dist = Vector3.Distance(transform.position, opp.transform.position);
+                if (dist < nearestDist)
+                {
+                    nearest = opp;
+                    nearestDist = dist;
+                }
+            }
+        }
+
+        if (nearest != null)
+        {
+            Vector3 dir = nearest.transform.position - transform.position;
+            if (dir.x < 0)
+                transform.localScale = new Vector3(-Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
+            else
+                transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
+        }
+
+        return nearest;
+    }
+
+    public void TakeDamage(float amount)
+    {
+        currentHP -= amount;
+        Debug.Log($"{gameObject.name} 피격: {amount}, 남은 HP {currentHP}");
+        if (currentHP <= 0)
+        {
+            Debug.Log($"{gameObject.name} 사망!");
+            Destroy(gameObject);
         }
     }
 }

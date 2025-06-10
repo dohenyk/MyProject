@@ -9,17 +9,23 @@ public class EnemyUnitController : UnitController
         if (mercenaryData != null)
         {
             attackSpeed = mercenaryData.attac_speed;
-            Debug.Log($"[데이터 적용] {mercenaryData.mercenaryName}의 공격 속도: {attackSpeed}회/초");
+            attackDamage = mercenaryData.attack;
+            maxHP = mercenaryData.hp;
+            Debug.Log($"[데이터 적용] {mercenaryData.mercenaryName}의 공격 속도: {attackSpeed}회/초, 공격력 {attackDamage}, HP {maxHP}");
         }
         else if (enemyData != null)
         {
             attackSpeed = enemyData.attac_speed;
-            Debug.Log($"[Enemy 데이터 적용] {enemyData.enemyName}의 공격 속도: {attackSpeed}회/초");
+            attackDamage = enemyData.attack;
+            maxHP = enemyData.hp;
+            Debug.Log($"[Enemy 데이터 적용] {enemyData.enemyName}의 공격 속도: {attackSpeed}회/초, 공격력 {attackDamage}, HP {maxHP}");
         }
         else
         {
-            Debug.LogWarning("MercenaryData와 EnemyData가 모두 연결되어 있지 않습니다. 기본 attackSpeed 사용.");
+            Debug.LogWarning("MercenaryData와 EnemyData가 모두 연결되어 있지 않습니다. 기본 스탯 사용.");
         }
+
+        currentHP = maxHP;
 
         string baseName = gameObject.name;
         if (baseName.EndsWith("(Clone)"))
