@@ -54,7 +54,15 @@ public class UnitCoverMovement : MonoBehaviour
             {
                 targetCover.Reserve(gameObject);   // occupy
                 unitController.SetSit();
-                AimAtNearestOpponent();
+
+                // Sit_Idle 상태가 될 때까지 대기한 뒤 조준 상태로 전환
+                yield return new WaitUntil(() =>
+                    unitController.animator.GetCurrentAnimatorStateInfo(0).IsName("Sit_Idle"));
+
+                var target = AimAtNearestOpponent();
+                if (target != null)
+                    Debug.Log($"{gameObject.name} -> {target.name} 조준");
+
                 unitController.SetAimOn();
                 yield break;
             }
@@ -75,12 +83,12 @@ public class UnitCoverMovement : MonoBehaviour
             .FirstOrDefault(c => c.IsAvailable || c.OccupiedBy == gameObject);
     }
 
-    private void AimAtNearestOpponent()
+    private GameObject AimAtNearestOpponent()
     {
         string opponentTag = gameObject.CompareTag("Enemy") ? "Merc" : "Enemy";
         var opponents = GameObject.FindGameObjectsWithTag(opponentTag);
         if (opponents.Length == 0)
-            return;
+            return null;
 
         GameObject nearest = null;
         float nearestDist = float.MaxValue;
@@ -102,6 +110,8 @@ public class UnitCoverMovement : MonoBehaviour
             else
                 transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
         }
+
+        return nearest;
     }
 
     void OnDestroy()
