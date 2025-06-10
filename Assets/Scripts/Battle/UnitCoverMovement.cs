@@ -45,6 +45,13 @@ public class UnitCoverMovement : MonoBehaviour
                 if (targetCover == null || (targetCover.OccupiedBy != null && targetCover.OccupiedBy != gameObject))
                     break;
 
+                // 이동 방향에 맞춰 스프라이트가 목적지를 바라보게 조정
+                Vector3 dir = targetPos - transform.position;
+                if (dir.x < 0)
+                    transform.localScale = new Vector3(-Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
+                else if (dir.x > 0)
+                    transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
+
                 transform.position = Vector3.MoveTowards(transform.position, targetPos, moveSpeed * Time.deltaTime);
                 yield return null;
             }
