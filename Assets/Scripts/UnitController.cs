@@ -2,14 +2,11 @@
 using UnityEngine;
 using System.Collections;
 
-
 public class UnitController : MonoBehaviour
 {
     public float attackSpeed; // 초당 공격 횟수
-
     public Animator animator;
     public AnimationClip fireClip; // Fire 애니메이션 클립 (재생 길이를 구하기 위해)
-
     public MercenaryData mercenaryData;
 
     public float attackDamage = 1f;   // 공격력
@@ -151,17 +148,17 @@ public class UnitController : MonoBehaviour
 
     private IEnumerator AttackLoop()
     {
-        float targetCycleTime = 1f / attackSpeed;        // 원래 계산된 주기 (초)
-        float minCycleTime = fireClip != null ? fireClip.length : 0f;            // 최소 주기 (애니메이션 길이)
-        float maxAllowedSpeed = minCycleTime > 0f ? 1f / minCycleTime : attackSpeed;       // 최대 허용 공격 속도 (초당 몇 회)
+        float targetCycleTime = 1f / attackSpeed;
+        float minCycleTime = fireClip != null ? fireClip.length : 0f;
+        float maxAllowedSpeed = minCycleTime > 0f ? 1f / minCycleTime : attackSpeed;
 
-        float cycleTime = Mathf.Max(targetCycleTime, minCycleTime); // 최종 사용할 주기
-        float actualAppliedSpeed = 1f / cycleTime;                 // 최종 적용 속도 (초당 몇 회)
+        float cycleTime = Mathf.Max(targetCycleTime, minCycleTime);
+        float actualAppliedSpeed = 1f / cycleTime;
 
         if (cycleTime > targetCycleTime)
         {
             Debug.LogWarning(
-                $"[공격 속도 제한] 입력된 attackSpeed: {attackSpeed:F2}회/초 → 최대 허용 속도: {maxAllowedSpeed:F2}회/초 → 실제 적용 속도: {actualAppliedSpeed:F2}회/초 (애니메이션 길이 {fireClip.length:F2}초 기준)"
+                $"[공격 속도 제한] 입력된 attackSpeed: {attackSpeed:F2}회/초 → 최대 허용 속도: {maxAllowedSpeed:F2}회/초 → 실제 적용 속도: {actualAppliedSpeed:F2}회/초"
             );
         }
 
@@ -202,13 +199,8 @@ public class UnitController : MonoBehaviour
                     currentTarget = null;
                 }
             }
-            else
-            {
-                currentTarget = null;
-            }
 
             float waitTime = cycleTime - (fireClip != null ? fireClip.length : 0f);
-
             if (waitTime > 0f)
             {
                 Debug.Log($"AimHold 대기 {waitTime:F2}초");

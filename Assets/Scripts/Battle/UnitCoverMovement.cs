@@ -92,7 +92,6 @@ public class UnitCoverMovement : MonoBehaviour
             .FirstOrDefault(c => c.IsAvailable || c.OccupiedBy == gameObject);
     }
 
-
     // Sit 애니메이션 완료 후 Idle 상태에 도달했는지 확인
     private bool IsSitIdleState()
     {

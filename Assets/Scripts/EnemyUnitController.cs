@@ -7,7 +7,7 @@ public class EnemyUnitController : UnitController
     new void Start()
     {
         ApplyEnemyData();
-        FindFireClip();
+        FindFireClip();  // Fire 애니메이션 자동 할당
     }
 
     public void ApplyEnemyData()
