@@ -54,6 +54,8 @@ public class UnitCoverMovement : MonoBehaviour
             {
                 targetCover.Reserve(gameObject);   // occupy
                 unitController.SetSit();
+                AimAtNearestOpponent();
+                unitController.SetAimOn();
                 yield break;
             }
 
@@ -71,6 +73,35 @@ public class UnitCoverMovement : MonoBehaviour
             .Where(c => c.IsAvailable || c.OccupiedBy == gameObject)
             .OrderBy(c => Vector3.Distance(transform.position, c.transform.position))
             .FirstOrDefault(c => c.IsAvailable || c.OccupiedBy == gameObject);
+    }
+
+    private void AimAtNearestOpponent()
+    {
+        string opponentTag = gameObject.CompareTag("Enemy") ? "Merc" : "Enemy";
+        var opponents = GameObject.FindGameObjectsWithTag(opponentTag);
+        if (opponents.Length == 0)
+            return;
+
+        GameObject nearest = null;
+        float nearestDist = float.MaxValue;
+        foreach (var opp in opponents)
+        {
+            float dist = Vector3.Distance(transform.position, opp.transform.position);
+            if (dist < nearestDist)
+            {
+                nearestDist = dist;
+                nearest = opp;
+            }
+        }
+
+        if (nearest != null)
+        {
+            Vector3 dir = nearest.transform.position - transform.position;
+            if (dir.x < 0)
+                transform.localScale = new Vector3(-Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
+            else
+                transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
+        }
     }
 
     void OnDestroy()
