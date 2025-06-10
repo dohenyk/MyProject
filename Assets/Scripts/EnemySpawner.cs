@@ -24,6 +24,7 @@ public BattleGridManager gridManager;
 
             Vector3 pos = gridManager.GetWorldPosition(x, y);
             GameObject obj = Instantiate(prefab, pos, Quaternion.identity);
+            obj.tag = "Enemy"; // 태그 설정으로 용병이 인식 가능하도록
 
             // add movement behavior to seek nearest cover
             obj.AddComponent<UnitCoverMovement>();
@@ -33,6 +34,7 @@ public BattleGridManager gridManager;
             if (controller != null && enemyDatas != null && index < enemyDatas.Length)
             {
                 controller.enemyData = enemyDatas[index];
+                controller.ApplyEnemyData();
 
                 // Animator에 AnimatorController 연결
                 var animator = obj.GetComponent<Animator>();
@@ -40,6 +42,7 @@ public BattleGridManager gridManager;
                 if (data != null && data.animatorController != null)
                 {
                     animator.runtimeAnimatorController = data.animatorController;
+                    controller.FindFireClip();
                 }
             }
             index++;
