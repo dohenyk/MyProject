@@ -62,7 +62,7 @@ public class UnitCoverMovement : MonoBehaviour
                 targetCover.Reserve(gameObject);   // occupy
                 unitController.SetSit();
 
-                // Sit 애니메이션이 끝나고 Sit_Idle 상태(머쓱/적 모두)에 도달할 때까지 대기
+                // Sit 애니메이션이 끝나고 Sit_Idle 상태에 도달할 때까지 대기
                 yield return new WaitUntil(IsSitIdleState);
 
                 var target = unitController.AcquireNearestOpponent();
@@ -90,7 +90,6 @@ public class UnitCoverMovement : MonoBehaviour
             .OrderBy(c => Vector3.Distance(transform.position, c.transform.position))
             .FirstOrDefault(c => c.IsAvailable || c.OccupiedBy == gameObject);
     }
-
 
     // Sit 애니메이션 완료 후 Idle 상태에 도달했는지 확인
     private bool IsSitIdleState()
