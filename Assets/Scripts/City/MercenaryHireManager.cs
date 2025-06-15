@@ -6,6 +6,7 @@ public class MercenaryHireManager : MonoBehaviour
     public static MercenaryHireManager Instance;
 
     private List<MercenaryData> hiredMercenaries = new List<MercenaryData>();
+    private Dictionary<MercenaryData, Vector2Int> mercenaryPositions = new Dictionary<MercenaryData, Vector2Int>();
 
     void Awake()
     {
@@ -25,12 +26,29 @@ public class MercenaryHireManager : MonoBehaviour
         if (!hiredMercenaries.Contains(data))
         {
             hiredMercenaries.Add(data);
-            Debug.Log($"{data.mercenaryName} °í¿ëµÊ! ÇöÀç ÃÑ {hiredMercenaries.Count}¸í.");
+            Debug.Log($"{data.mercenaryName} ê³ ìš©! í˜„ì¬ ìˆ˜: {hiredMercenaries.Count}.");
         }
         else
         {
-            Debug.Log($"{data.mercenaryName} ÀÌ¹Ì °í¿ëµÊ.");
+            Debug.Log($"{data.mercenaryName} ì´ë¯¸ ê³ ìš©ë¨.");
         }
+    }
+
+    public void SetMercenaryPosition(MercenaryData data, Vector2Int cell)
+    {
+        if (hiredMercenaries.Contains(data))
+        {
+            mercenaryPositions[data] = cell;
+        }
+        else
+        {
+            Debug.LogWarning($"{data.mercenaryName}ì€(ëŠ”) ê³ ìš© ìƒíƒœê°€ ì•„ë‹™ë‹ˆë‹¤.");
+        }
+    }
+
+    public bool TryGetMercenaryPosition(MercenaryData data, out Vector2Int cell)
+    {
+        return mercenaryPositions.TryGetValue(data, out cell);
     }
 
     public List<MercenaryData> GetHiredMercenaries()

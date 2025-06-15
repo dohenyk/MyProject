@@ -38,6 +38,13 @@ public class GridCreator : MonoBehaviour
                 GameObject cell = Instantiate(cellPrefab, transform);
                 cell.name = $"Cell_{x}_{y}";
 
+                var cellComp = cell.GetComponent<DeploymentGridCell>();
+                if (cellComp != null)
+                {
+                    cellComp.cellCoordinate = new Vector2Int(x, y);
+                    cellComp.controller = GetComponentInParent<MercenaryDeploymentUIController>();
+                }
+
                 var text = cell.GetComponentInChildren<Text>();
                 if (text != null)
                     text.text = $"({x},{y})";
