@@ -13,9 +13,17 @@ public class MercenarySpawner : MonoBehaviour
         int index = 0;
         foreach (var mercData in hiredList)
         {
-            int x = index / gridManager.gridHeight;
-            int yFromTop = index % gridManager.gridHeight;
-            int y = gridManager.gridHeight - 1 - yFromTop; // 위에서 아래로 채우기
+            Vector2Int cell;
+            if (!MercenaryHireManager.Instance.TryGetMercenaryPosition(mercData, out cell))
+            {
+                int x = index / gridManager.gridHeight;
+                int yFromTop = index % gridManager.gridHeight;
+                int y = gridManager.gridHeight - 1 - yFromTop;
+                cell = new Vector2Int(x, y);
+            }
+
+            int x = cell.x;
+            int y = cell.y;
 
             if (x >= gridManager.gridWidth)
             {
