@@ -16,10 +16,10 @@ public class MercenarySpawner : MonoBehaviour
             Vector2Int cell;
             if (!MercenaryHireManager.Instance.TryGetMercenaryPosition(mercData, out cell))
             {
-                int x = index / gridManager.gridHeight;
+                int tempX = index / gridManager.gridHeight;
                 int yFromTop = index % gridManager.gridHeight;
-                int y = gridManager.gridHeight - 1 - yFromTop;
-                cell = new Vector2Int(x, y);
+                int tempY = gridManager.gridHeight - 1 - yFromTop;
+                cell = new Vector2Int(tempX, tempY);
             }
 
             int x = cell.x;
