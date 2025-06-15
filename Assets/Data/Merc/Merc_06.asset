@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 995cf9754c8f1c1499d35bc63b5dbeb3, type: 3}
+  m_Name: Merc_06
+  m_EditorClassIdentifier: 
+  mercenaryName: Kim
+  attack: 7
+  attac_speed: 1.2
+  move_speed: 2.8
+  hp: 80
+  price: 1400
+  animatorController: {fileID: 9100000, guid: 6ce00ba62f7e37043a98c6d7cf51c097, type: 2}
+  portrait: {fileID: 6510470452476854869, guid: 5a8904e4b05d3b94c842d15a908b85b5, type: 3}
+  idleAnimation: {fileID: 7400000, guid: 6fb6433e46e192449a0dbb69f3718325, type: 2}
