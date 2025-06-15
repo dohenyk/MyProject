@@ -82,7 +82,7 @@ public class UnitCoverMovement : MonoBehaviour
 
     private CoverObject FindNearestAvailableCover()
     {
-        var covers = FindObjectsOfType<CoverObject>();
+        var covers = Object.FindObjectsByType<CoverObject>(FindObjectsSortMode.None);
         if (covers.Length == 0)
             return null;
 
